@@ -22,9 +22,9 @@ RUN a2enmod rewrite
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 RUN echo '<Directory /var/www/html/public>\n    AllowOverride All\n    Require all granted\n</Directory>' >> /etc/apache2/sites-available/000-default.conf
 
-# Copiar código fuente
+# Copiar código fuente desde la subcarpeta api_tienda
 WORKDIR /var/www/html
-COPY . .
+COPY api_tienda/ .
 
 # Instalar dependencias de Composer (sin dev)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
