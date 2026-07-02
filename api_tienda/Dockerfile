@@ -32,13 +32,27 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Crear la base de datos SQLite
 RUN touch database/database.sqlite
 
+# Crear .env de producción directamente (sin depender de archivo externo)
+RUN echo "APP_NAME=InventMax" > .env \
+    && echo "APP_ENV=production" >> .env \
+    && echo "APP_KEY=" >> .env \
+    && echo "APP_DEBUG=false" >> .env \
+    && echo "APP_URL=https://api-tienda.onrender.com" >> .env \
+    && echo "DB_CONNECTION=sqlite" >> .env \
+    && echo "DB_DATABASE=/var/www/html/database/database.sqlite" >> .env \
+    && echo "SESSION_DRIVER=file" >> .env \
+    && echo "CACHE_STORE=file" >> .env \
+    && echo "QUEUE_CONNECTION=sync" >> .env \
+    && echo "LOG_CHANNEL=stack" >> .env \
+    && echo "LOG_LEVEL=error" >> .env \
+    && echo "FILESYSTEM_DISK=local" >> .env \
+    && echo "MAIL_MAILER=log" >> .env
+
 # Permisos correctos para Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Copiar .env de producción y preparar la app
-COPY .env.render .env
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && chmod 664 /var/www/html/database/database.sqlite
 
 # Generar app key, migrar y seedear
 RUN php artisan key:generate --force \
